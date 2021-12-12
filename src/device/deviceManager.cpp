@@ -2,47 +2,43 @@
 
 deviceManager::deviceManager(){};
 
-deviceManager::~deviceManager(){
-	for (device* item : devices){
-		item->~device();
-	}
-};
+deviceManager::~deviceManager(){};
 
-device deviceManager::add(string _name, int _port){
+int deviceManager::add(string _name, int _port){
+	int deviceIndex = devices.size();
 	device newDevice(_name, _port);
-	devices.push_back(&newDevice);
-	return newDevice;
+	devices.push_back(newDevice);
+	return deviceIndex;
+}
+void deviceManager::incrementReadData(){
+	nrOfReadData++;
+}
+
+void deviceManager::incrementReceivedData(){
+	nrOfReceivedData++;
+
 }
 
 int deviceManager::getNrOfReadData(){
-	int sum = 0;
-	for (device* item : devices){
-		sum += item->getNrOfReadData();
-	}
-	return sum;
+	return nrOfReadData;
 }
 
 int deviceManager::getNrOfReceivedData(){
-	int sum = 0;
-	for (device* item : devices){
-		sum += item->getNrOfReceivedData();
-	}
-	return sum;
+	return nrOfReceivedData;
 }
 
 int deviceManager::getNrOfData(){
-	int sum = 0;
-	for (device* item : devices){
-		sum += item->getNrOfData();
-	}
-	return sum;
+	return getNrOfReadData() + getNrOfReceivedData();
 }
 
 int deviceManager::getNrOfDevices(){
 	return devices.size();
 }
 
+device* deviceManager::get(int deviceIndex){
+	return &(devices[deviceIndex]);
+}
+
 string deviceManager::print(){
-	return to_string(getNrOfDevices());
-	// return "[" + to_string(getNrOfReadData()) + "/" + to_string(getNrOfReceivedData()) + "/" + to_string(getNrOfDevices()) + "]";
+	return "Read:" + to_string(getNrOfReadData()) + "/Received:" + to_string(getNrOfReceivedData()) + "/Devices:" + to_string(getNrOfDevices()) + "";
 }

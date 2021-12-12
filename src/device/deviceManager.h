@@ -7,14 +7,19 @@ using namespace std;
 
 class deviceManager{
     private:
-        vector<device*> devices;
+        vector<device> devices;
+        int nrOfReadData;
+        int nrOfReceivedData;
     public:
         deviceManager();
         ~deviceManager();
-        device add(string _name, int _port);
+        int add(string _name, int _port);
+        void incrementReadData();
+        void incrementReceivedData();
         int getNrOfReadData();
         int getNrOfReceivedData();
         int getNrOfData();
         int getNrOfDevices();
+        device* get(int deviceIndex);
         string print();
 };

@@ -16,22 +16,27 @@ using namespace std;
 using namespace std::this_thread;
 using namespace std::chrono;
 
-void threadFunctionDevice(device& connectedDevice){
+void threadFunctionDevice(deviceManager& devices, int deviceIndex){
     int listenThreadSleep = parameterManager::get("listenThreadSleep", 100);
     int recieveDataFrequency = parameterManager::get("recieveDataFrequency", 10);
     int currentIteration = 0;
+    device* connectedDevice = devices.get(deviceIndex);
 
-    cout << connectedDevice.getId() << "is connected." << endl;
+    cout << connectedDevice->getId() << "is connected." << endl;
     do{
         if(currentIteration++ % recieveDataFrequency == 0){
-            string receivedMessage = connectedDevice.receive();
-            if(!receivedMessage.empty())
-                cout << connectedDevice.print(receivedMessage) << endl;
+            string receivedMessage = connectedDevice->receive();
+            if(!receivedMessage.empty()){
+                cout << connectedDevice->print(receivedMessage) << endl;
+                devices.incrementReceivedData();
+            }
         }
 
-        string clientMessage = connectedDevice.read();
-        if(!clientMessage.empty())
-                cout << connectedDevice.print(clientMessage) << endl;
+        string clientMessage = connectedDevice->read();
+        if(!clientMessage.empty()){
+            cout << connectedDevice->print(clientMessage) << endl;
+            devices.incrementReadData();
+        }
 
         sleep_for(milliseconds(listenThreadSleep));
     }while(true);
@@ -58,9 +63,9 @@ void threadFunctionListen(deviceManager& devices){
                 }
                 if(sm.write(currentAvailablePort)){
                     int newClientPort = currentAvailablePort++;
-                    device newDevice = devices.add(newClientName, newClientPort);
+                    int deviceIndex = devices.add(newClientName, newClientPort);
                     if(fork() != 0){
-                        thread threadDevice(threadFunctionDevice, ref(newDevice));
+                        thread threadDevice(threadFunctionDevice, ref (devices), deviceIndex);
                         threadDevice.join();
                     }
                 }
