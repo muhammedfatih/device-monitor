@@ -15,5 +15,6 @@ class deviceManager{
         int getNrOfReadData();
         int getNrOfReceivedData();
         int getNrOfData();
+        int getNrOfDevices();
         string print();
 };

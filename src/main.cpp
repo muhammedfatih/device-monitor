@@ -2,13 +2,15 @@
 #include <chrono>
 #include <thread>
 #include <vector>
+#include <cstdlib>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+
 #include "helpers/parameterManager.h"
 #include "helpers/socketManager.h"
 #include "device/deviceManager.h"
 #include "device/device.h"
-#include <cstdlib>
-#include <unistd.h>
-#include <sys/types.h>
 
 using namespace std;
 using namespace std::this_thread;
@@ -19,6 +21,7 @@ void threadFunctionDevice(device& connectedDevice){
     int recieveDataFrequency = parameterManager::get("recieveDataFrequency", 10);
     int currentIteration = 0;
 
+    cout << connectedDevice.getId() << "is connected." << endl;
     do{
         if(currentIteration++ % recieveDataFrequency == 0){
             string receivedMessage = connectedDevice.receive();
@@ -45,7 +48,7 @@ void threadFunctionListen(deviceManager& devices){
     sm.connect();
 
     cout << "Listening..." << endl;
-    do{
+        do{
         if(sm.getConnection()){
             string newClientName = sm.read();
             if(!newClientName.empty()){
@@ -56,8 +59,7 @@ void threadFunctionListen(deviceManager& devices){
                 if(sm.write(currentAvailablePort)){
                     int newClientPort = currentAvailablePort++;
                     device newDevice = devices.add(newClientName, newClientPort);
-                    pid_t pid = fork();
-                    if(pid != 0){
+                    if(fork() != 0){
                         thread threadDevice(threadFunctionDevice, ref(newDevice));
                         threadDevice.join();
                     }
@@ -66,7 +68,6 @@ void threadFunctionListen(deviceManager& devices){
         }
         sleep_for(milliseconds(listenThreadSleep));
     }while(true);
-
     sm.disConnect();
 }
 
@@ -82,7 +83,7 @@ void threadFunctionStats(deviceManager& devices){
             string request = sm.read();
             if(!request.empty()){
                 sm.write(devices.print());
-                cout << devices.print() << endl;
+                cout << devices.print() << endl; 
             }
         }
         sleep_for(milliseconds(listenThreadSleep));
@@ -93,12 +94,17 @@ void threadFunctionStats(deviceManager& devices){
 
 int main(int argc, char** argv){
     parameterManager::set(argc, argv, "./config.ini");
-    deviceManager devices;
 
-    thread threadListen(threadFunctionListen, ref(devices));
-    thread threadStats(threadFunctionStats, ref(devices));
-    threadListen.join();
-    threadStats.join();
+    deviceManager* devices;
+    devices = (deviceManager*) mmap(NULL, sizeof *devices, PROT_READ|PROT_WRITE, MAP_ANON|MAP_SHARED, -1, 0);
+
+    if(fork() == 0){
+        thread threadListen(threadFunctionListen, ref(*devices));
+        threadListen.join();
+    }else{
+        thread threadStats(threadFunctionStats, ref(*devices));
+        threadStats.join();
+    }
 
     return 0;
 }

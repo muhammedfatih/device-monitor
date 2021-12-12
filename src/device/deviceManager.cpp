@@ -38,6 +38,11 @@ int deviceManager::getNrOfData(){
 	return sum;
 }
 
+int deviceManager::getNrOfDevices(){
+	return devices.size();
+}
+
 string deviceManager::print(){
-	return "[" + to_string(getNrOfReadData()) + "/" + to_string(getNrOfReceivedData()) + "/" + to_string(devices.size()) + "]";
+	return to_string(getNrOfDevices());
+	// return "[" + to_string(getNrOfReadData()) + "/" + to_string(getNrOfReceivedData()) + "/" + to_string(getNrOfDevices()) + "]";
 }

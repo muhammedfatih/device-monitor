@@ -12,7 +12,6 @@ all: install
 
 install: \
 	clean \
-	threadSafeQueue.o \
 	stringFunctions.o \
 	parameterManager.o \
 	socketManager.o \
@@ -22,7 +21,6 @@ install: \
 	$Qecho "Generating binary..."
 	$Q$(CXX) -o ./bin/device-monitor \
 		./obj/device-monitor.o \
-		./obj/threadSafeQueue.o \
 		./obj/stringFunctions.o \
 		./obj/parameterManager.o \
 		./obj/socketManager.o \
@@ -35,13 +33,6 @@ clean:
 	$Qrm -rf ./obj
 	$Qmkdir ./bin
 	$Qmkdir ./obj
-
-threadSafeQueue.o: \
-	./src/helpers/threadSafeQueue.cpp \
-	./src/helpers/threadSafeQueue.h
-	$Qecho "Compiling threadSafeQueue..."
-	$Q$(CXX) -c ./src/helpers/threadSafeQueue.cpp
-	$Qmv threadSafeQueue.o ./obj/threadSafeQueue.o
 
 stringFunctions.o: \
 	./src/helpers/stringFunctions.cpp \
