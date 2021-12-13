@@ -18,13 +18,13 @@ using namespace std::chrono;
 
 void threadFunctionDevice(deviceManager& devices, int deviceIndex){
     int listenThreadSleep = parameterManager::get("listenThreadSleep", 100);
-    int recieveDataFrequency = parameterManager::get("recieveDataFrequency", 10);
+    int receiveDataFrequency = parameterManager::get("receiveDataFrequency", 10);
     int currentIteration = 0;
     device* connectedDevice = devices.get(deviceIndex);
 
     cout << connectedDevice->getId() << "is connected." << endl;
     do{
-        if(currentIteration++ % recieveDataFrequency == 0){
+        if(currentIteration++ % receiveDataFrequency == 0){
             string receivedMessage = connectedDevice->receive();
             if(!receivedMessage.empty()){
                 cout << connectedDevice->print(receivedMessage) << endl;

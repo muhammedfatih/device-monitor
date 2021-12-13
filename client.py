@@ -4,9 +4,9 @@ import random
 import time
 
 clientName = sys.argv[1].encode("utf-8")
-min = int(sys.argv[2])
-max = int(sys.argv[3])
-delay = int(sys.argv[4])
+min = 1
+max = 1000
+delay = 1
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_TCP)
 s.connect(('127.0.0.1', 34220))
