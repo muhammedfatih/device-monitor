@@ -6,6 +6,9 @@ deviceManager::~deviceManager(){};
 
 int deviceManager::add(string _name, int _port){
 	int deviceIndex = devices.size();
+	for (device item : devices)
+		if(item.getName() == _name)
+			return -1;
 	device newDevice(_name, _port);
 	devices.push_back(newDevice);
 	return deviceIndex;

@@ -16,6 +16,7 @@ class device{
         device(string _name, int _port);
         ~device();
         string getId();
+        string getName();
         bool write(string msg);
         string read();
         string receive();

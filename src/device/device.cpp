@@ -16,6 +16,10 @@ string device::getId(){
     return name + "(" + to_string(port) + ")";
 }
 
+string device::getName(){
+    return name;
+}
+
 bool device::write(string msg){
     return sm.write(msg);
 }

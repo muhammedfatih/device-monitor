@@ -64,9 +64,17 @@ void threadFunctionListen(deviceManager& devices){
                 if(sm.write(currentAvailablePort)){
                     int newClientPort = currentAvailablePort++;
                     int deviceIndex = devices.add(newClientName, newClientPort);
-                    if(fork() != 0){
-                        thread threadDevice(threadFunctionDevice, ref (devices), deviceIndex);
-                        threadDevice.join();
+                    if(deviceIndex != -1){
+                        if(fork() != 0){
+                            thread threadDevice(
+                                threadFunctionDevice,
+                                ref (devices),
+                                deviceIndex
+                            );
+                            threadDevice.join();
+                        }
+                    }else{
+                        cout << "Error: client name should be unique." << endl;
                     }
                 }
             }
